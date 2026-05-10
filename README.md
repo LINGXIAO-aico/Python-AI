@@ -45,7 +45,7 @@ python -m pip install -r requirements-advanced.txt
 
 ## 一键复现流程
 
-当前仓库已经内置课程演示用校园 FAQ 数据，可直接运行完整流水线。
+当前仓库已经内置课程演示用校园 FAQ 数据，可直接运行完整流水线。当前知识库为 60 条 FAQ，评测集为 50 条问题。
 
 ```bash
 python scripts/01_prepare_data.py
@@ -131,7 +131,7 @@ python gradio_app.py
 
 ## 对比实验
 
-当前评测包含 20 条校园问题，记录以下对比：
+当前评测包含 50 条校园问题，记录以下对比：
 
 1. 检索策略对比：TF-IDF 向量检索、BM25 关键词检索、混合检索。
 2. 系统回答对比：RAG 系统回答 vs 无检索基线回答。

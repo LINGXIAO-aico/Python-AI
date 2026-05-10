@@ -1,13 +1,13 @@
 {
   "model": "TF-IDF char_wb ngram(2,4) + custom BM25 + hybrid ensemble",
-  "chunk_count": 32,
-  "vocabulary_size": 6638,
-  "bm25_vocabulary_size": 1918,
+  "chunk_count": 60,
+  "vocabulary_size": 11661,
+  "bm25_vocabulary_size": 2983,
   "matrix_shape": [
-    32,
-    6638
+    60,
+    11661
   ],
-  "train_seconds": 0.0466,
+  "train_seconds": 0.0384,
   "index_path": "E:\\python\\B07_RAG_campus_assistant\\models\\tfidf_vector_store.joblib",
   "retrieval_strategies": [
     "tfidf_vector",

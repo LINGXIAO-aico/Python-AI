@@ -1,4 +1,4 @@
 ﻿strategy,top_k,question_count,hit_at_1,hit_at_3,mrr,avg_latency_ms
-tfidf_vector,3,20,1.0,1.0,1.0,1.137
-bm25_keyword,3,20,1.0,1.0,1.0,0.365
-hybrid_50_50,3,20,1.0,1.0,1.0,1.411
+tfidf_vector,3,50,0.98,1.0,0.99,0.763
+bm25_keyword,3,50,0.98,1.0,0.99,0.332
+hybrid_50_50,3,50,1.0,1.0,1.0,1.09

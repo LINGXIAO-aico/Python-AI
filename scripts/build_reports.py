@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT_DIR = ROOT / "reports"
 FIGURE_DIR = REPORT_DIR / "figures"
 LOG_DIR = ROOT / "logs"
-REPORT_DATE = "2026年5月6日"
+REPORT_DATE = "2026年5月10日"
 TITLE = "B07 RAG 校园智能问答助手"
 TEAM_MEMBERS = "归梦依、凌霄、周子涵、杨歆苒"
 TEAM_ASSIGNMENT = "归梦依：数据处理与知识库；凌霄：检索策略设计与优化；周子涵：大模型调用与系统开发；杨歆苒：评测分析与报告撰写"
@@ -37,6 +37,9 @@ def read_json(path: Path) -> dict:
 DATA_PROFILE = read_json(LOG_DIR / "data_profile.json")
 TRAINING_LOG = read_json(LOG_DIR / "training_log.json")
 EVAL_SUMMARY = read_json(LOG_DIR / "evaluation_summary.json")
+CATEGORY_NAMES = "、".join(DATA_PROFILE["categories"].keys())
+CATEGORY_SUMMARY = f"覆盖{len(DATA_PROFILE['categories'])}类校园场景：{CATEGORY_NAMES}。"
+QUESTION_COUNT = int(EVAL_SUMMARY["question_count"])
 
 
 def set_run_font(run, size=10.5, bold=False, color=None):
@@ -191,9 +194,9 @@ def build_midterm_docx(path: Path) -> None:
     add_heading(doc, "一、已完成工作")
     finished = [
         f"完成原始知识库整理与清洗：原始 {DATA_PROFILE['raw_rows']} 条，清洗后 {DATA_PROFILE['clean_rows']} 条，文本块 {DATA_PROFILE['chunk_count']} 个。",
-        "覆盖11类校园场景：教务、考试、图书馆、一卡通、宿舍、网络、学籍、奖助、就业、活动与生活服务。",
+        CATEGORY_SUMMARY,
         f"完成 TF-IDF 向量索引与 BM25 关键词索引，TF-IDF 词表 {TRAINING_LOG['vocabulary_size']}，BM25 词表 {TRAINING_LOG['bm25_vocabulary_size']}。",
-        f"完成向量检索、BM25 和混合检索对比；当前选用混合检索，Hit@1={EVAL_SUMMARY['hit_at_1']:.2f}，Hit@3={EVAL_SUMMARY['hit_at_3']:.2f}，MRR={EVAL_SUMMARY['mrr']:.2f}。",
+        f"构建 {QUESTION_COUNT} 条评测问题，完成向量检索、BM25 和混合检索对比；当前选用混合检索，Hit@1={EVAL_SUMMARY['hit_at_1']:.2f}，Hit@3={EVAL_SUMMARY['hit_at_3']:.2f}，MRR={EVAL_SUMMARY['mrr']:.2f}。",
         "完成命令行问答入口、Streamlit/Gradio 演示入口、评估日志和四张可视化图表。",
     ]
     for item in finished:
@@ -207,7 +210,7 @@ def build_midterm_docx(path: Path) -> None:
         ("字段校验", "检查 doc_id、类别、标题、正文、来源、链接、更新时间", "logs/data_profile.json"),
         ("文本清洗", "统一空白字符、去重、过滤过短文本，保留来源引用", "knowledge_base_clean.csv"),
         ("文本切分", "标题与正文拼接，按约260字符切分；后续真实文档按约500字/50字重叠切分", "chunks.csv"),
-        ("评测集", "按校园常见问题标注 gold_doc_id 和关键词，后续扩展至50题以上", "eval_questions.jsonl"),
+        ("评测集", f"按校园常见问题标注 gold_doc_id 和关键词，当前 {QUESTION_COUNT} 题，后续扩展至80题以上", "eval_questions.jsonl"),
     ]
     for row, row_values in zip(data_table.rows, rows):
         for idx, text in enumerate(row_values):
@@ -251,7 +254,7 @@ def build_midterm_docx(path: Path) -> None:
         ("问题", "原因分析", "解决方案"),
         ("无 API Key 时无法稳定调用大模型", "课堂环境和网络条件不确定", "保留通义千问/OpenAI 兼容接口，同时实现离线抽取式回答兜底"),
         ("中文短问题检索容易受分词影响", "校园问题表达短且口语化", "采用字符 n-gram TF-IDF，减少分词误差"),
-        ("知识库规模偏小", "中期阶段先跑通闭环", "后续扩展到100条以上，并把评测问题扩展到50题以上"),
+        ("真实资料占比仍需提高", "中期阶段以结构化FAQ跑通闭环", "后续接入学校真实PDF/Word资料，并把评测问题扩展到80题以上"),
     ]
     for row, row_values in zip(issues.rows, issue_rows):
         for idx, text in enumerate(row_values):
@@ -430,9 +433,9 @@ def build_midterm_pdf(path: Path) -> None:
         Spacer(1, 0.15 * cm),
         Paragraph("一、已完成工作", styles["h"]),
         Paragraph(f"1. 完成原始知识库整理与清洗：原始 {DATA_PROFILE['raw_rows']} 条，清洗后 {DATA_PROFILE['clean_rows']} 条，文本块 {DATA_PROFILE['chunk_count']} 个。", styles["body"]),
-        Paragraph("2. 覆盖11类校园场景：教务、考试、图书馆、一卡通、宿舍、网络、学籍、奖助、就业、活动与生活服务。", styles["body"]),
+        Paragraph(f"2. {CATEGORY_SUMMARY}", styles["body"]),
         Paragraph(f"3. 完成 TF-IDF 向量索引与 BM25 关键词索引，TF-IDF 词表 {TRAINING_LOG['vocabulary_size']}，BM25 词表 {TRAINING_LOG['bm25_vocabulary_size']}。", styles["body"]),
-        Paragraph(f"4. 完成向量检索、BM25 和混合检索对比；当前选用混合检索，Hit@1={EVAL_SUMMARY['hit_at_1']:.2f}，Hit@3={EVAL_SUMMARY['hit_at_3']:.2f}，MRR={EVAL_SUMMARY['mrr']:.2f}。", styles["body"]),
+        Paragraph(f"4. 构建 {QUESTION_COUNT} 条评测问题，完成向量检索、BM25 和混合检索对比；当前选用混合检索，Hit@1={EVAL_SUMMARY['hit_at_1']:.2f}，Hit@3={EVAL_SUMMARY['hit_at_3']:.2f}，MRR={EVAL_SUMMARY['mrr']:.2f}。", styles["body"]),
         Paragraph("5. 完成命令行问答入口、Streamlit/Gradio 演示入口、评估日志和四张可视化图表。", styles["body"]),
         Paragraph("二、数据处理细节", styles["h"]),
         pdf_table(
@@ -442,7 +445,7 @@ def build_midterm_pdf(path: Path) -> None:
                 ["字段校验", "检查 doc_id、类别、标题、正文、来源、链接、更新时间", "logs/data_profile.json"],
                 ["文本清洗", "统一空白字符、去重、过滤过短文本，保留来源引用", "knowledge_base_clean.csv"],
                 ["文本切分", "标题与正文拼接，按约260字符切分；真实文档按约500字/50字重叠切分", "chunks.csv"],
-                ["评测集", "按校园常见问题标注 gold_doc_id 和关键词，后续扩展至50题以上", "eval_questions.jsonl"],
+                ["评测集", f"按校园常见问题标注 gold_doc_id 和关键词，当前 {QUESTION_COUNT} 题，后续扩展至80题以上", "eval_questions.jsonl"],
             ],
             [2.4 * cm, 10.0 * cm, 4.2 * cm],
             7.6,
@@ -473,7 +476,7 @@ def build_midterm_pdf(path: Path) -> None:
                 ["问题", "原因分析", "解决方案"],
                 ["无 API Key 时无法稳定调用大模型", "课堂环境和网络条件不确定", "保留通义千问/OpenAI 兼容接口，同时实现离线抽取式回答兜底"],
                 ["中文短问题检索容易受分词影响", "校园问题表达短且口语化", "采用字符 n-gram TF-IDF，减少分词误差"],
-                ["知识库规模偏小", "中期阶段先跑通闭环", "后续扩展到100条以上，并把评测问题扩展到50题以上"],
+                ["真实资料占比仍需提高", "中期阶段以结构化FAQ跑通闭环", "后续接入学校真实PDF/Word资料，并把评测问题扩展到80题以上"],
             ],
             [4.8 * cm, 5.0 * cm, 6.4 * cm],
             7.2,

@@ -1,21 +1,21 @@
 {
-  "raw_rows": 32,
-  "clean_rows": 32,
+  "raw_rows": 60,
+  "clean_rows": 60,
   "duplicate_rows": 0,
   "categories": {
-    "一卡通": 3,
-    "图书馆": 3,
-    "奖助评优": 3,
-    "学籍管理": 3,
-    "宿舍后勤": 3,
-    "就业双创": 3,
-    "教务选课": 3,
-    "校园活动": 3,
-    "校园网络": 3,
-    "生活服务": 3,
-    "考试管理": 2
+    "一卡通": 5,
+    "图书馆": 5,
+    "奖助评优": 5,
+    "学籍管理": 5,
+    "宿舍后勤": 5,
+    "就业双创": 5,
+    "教务选课": 7,
+    "校园活动": 5,
+    "校园网络": 6,
+    "生活服务": 7,
+    "考试管理": 5
   },
-  "avg_content_length": 79.47,
+  "avg_content_length": 79.9,
   "min_content_length": 69,
   "max_content_length": 92,
   "missing_values": {
@@ -27,6 +27,6 @@
     "url": 0,
     "last_updated": 0
   },
-  "chunk_count": 32,
-  "avg_chunk_length": 87.41
+  "chunk_count": 60,
+  "avg_chunk_length": 87.75
 }
