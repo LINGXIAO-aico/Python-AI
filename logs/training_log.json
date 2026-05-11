@@ -7,8 +7,8 @@
     60,
     11661
   ],
-  "train_seconds": 0.0384,
-  "index_path": "E:\\python\\B07_RAG_campus_assistant\\models\\tfidf_vector_store.joblib",
+  "train_seconds": 0.1163,
+  "index_path": "C:\\Users\\coco\\Documents\\GitHub\\Python-AI\\models\\tfidf_vector_store.joblib",
   "retrieval_strategies": [
     "tfidf_vector",
     "bm25_keyword",
