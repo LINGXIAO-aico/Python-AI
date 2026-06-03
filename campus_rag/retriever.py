@@ -31,7 +31,7 @@ class RetrievedChunk:
     url: str
 
     @classmethod
-    def from_row(cls, rank: int, score: float, row: pd.Series) -> "RetrievedChunk":
+    def from_row(cls, rank: int, score: float, row: pd.Series) -> RetrievedChunk:
         return cls(
             rank=rank,
             score=round(float(score), 4),
@@ -115,7 +115,7 @@ class DenseRetriever:
         cls,
         embedder: BGEEmbedder,
         chunks: pd.DataFrame,
-    ) -> "DenseRetriever":
+    ) -> DenseRetriever:
         texts = chunks["content"].fillna("").astype(str).tolist()
         embeddings = embedder.encode_documents(texts)
         store = FAISSStore(dim=embedder.dim)
@@ -123,7 +123,7 @@ class DenseRetriever:
         return cls(embedder, store)
 
     @classmethod
-    def load(cls, embedder: BGEEmbedder, dim: int) -> "DenseRetriever":
+    def load(cls, embedder: BGEEmbedder, dim: int) -> DenseRetriever:
         store = FAISSStore.load(dim)
         return cls(embedder, store)
 
@@ -140,7 +140,7 @@ class DenseRetriever:
         scores, indices = self.store.search(q_vec, top_k)
         chunks = self.store.chunks
         results: list[RetrievedChunk] = []
-        for rank, (idx, score) in enumerate(zip(indices[0], scores[0]), start=1):
+        for rank, (idx, score) in enumerate(zip(indices[0], scores[0], strict=True), start=1):
             if idx < 0 or idx >= len(chunks):
                 continue
             if float(score) < min_score:
@@ -169,7 +169,7 @@ class TfidfRetriever:
         self.chunks = chunks.reset_index(drop=True)
 
     @classmethod
-    def fit(cls, chunks: pd.DataFrame) -> "TfidfRetriever":
+    def fit(cls, chunks: pd.DataFrame) -> TfidfRetriever:
         texts = chunks["content"].fillna("").astype(str).tolist()
         vectorizer = TfidfVectorizer(
             analyzer="char_wb",
@@ -190,7 +190,7 @@ class TfidfRetriever:
         )
 
     @classmethod
-    def load(cls, path: Path) -> "TfidfRetriever":
+    def load(cls, path: Path) -> TfidfRetriever:
         payload = joblib.load(path)
         return cls(payload["vectorizer"], payload["matrix"], payload["chunks"])
 
@@ -239,7 +239,7 @@ class BM25Retriever:
         self.b = b
 
     @classmethod
-    def fit(cls, chunks: pd.DataFrame, k1: float = 1.5, b: float = 0.75) -> "BM25Retriever":
+    def fit(cls, chunks: pd.DataFrame, k1: float = 1.5, b: float = 0.75) -> BM25Retriever:
         texts = chunks["content"].fillna("").astype(str).tolist()
         tokenized = [tokenize_for_bm25(text) for text in texts]
         doc_token_counts = [Counter(tokens) for tokens in tokenized]
@@ -292,7 +292,7 @@ class Bm25JiebaRetriever:
         self.bm25 = bm25
 
     @classmethod
-    def fit(cls, chunks: pd.DataFrame) -> "Bm25JiebaRetriever":
+    def fit(cls, chunks: pd.DataFrame) -> Bm25JiebaRetriever:
         import jieba
         texts = chunks["content"].fillna("").astype(str).tolist()
         tokenized = [list(jieba.cut(text)) for text in texts]

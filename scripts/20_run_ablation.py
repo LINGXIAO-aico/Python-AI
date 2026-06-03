@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 import time
 from pathlib import Path
@@ -28,22 +27,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from campus_rag.config import (
     ABLATION_RESULTS_PATH,
     CHUNK_PATH,
-    DENSE_RECALL_K,
-    BM25_RECALL_K,
-    RETRIEVAL_TOP_K,
     EMBEDDING_DIM,
-    RAW_EVAL_PATH,
     EVAL_150_PATH,
-    LLM_JUDGE_PATH,
+    RAW_EVAL_PATH,
+    RETRIEVAL_TOP_K,
 )
 from campus_rag.data import read_jsonl
 from campus_rag.embeddings import BGEEmbedder
-from campus_rag.evaluate import (
-    evaluate_retrievers,
-    judge_faithfulness,
-    judge_relevancy,
-    judge_context_precision,
-)
 from campus_rag.generator import llm_answer, no_retrieval_baseline
 from campus_rag.query_rewriter import hyde_rewrite
 from campus_rag.reranker import BGEReranker

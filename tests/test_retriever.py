@@ -6,8 +6,8 @@ from pathlib import Path
 import pandas as pd
 
 from campus_rag.retriever import (
-    BM25Retriever,
     Bm25JiebaRetriever,
+    BM25Retriever,
     RetrievedChunk,
     TfidfRetriever,
     _minmax,

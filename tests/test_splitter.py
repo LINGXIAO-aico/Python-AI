@@ -11,10 +11,11 @@ from campus_rag.splitter import build_chunks
 def _make_kb_csv(texts: list[dict]) -> Path:
     """创建临时知识库 CSV。"""
     df = pd.DataFrame(texts)
-    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, encoding="utf-8-sig")
-    df.to_csv(tmp.name, index=False, encoding="utf-8-sig")
-    tmp.close()
-    return Path(tmp.name)
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".csv", delete=False, encoding="utf-8-sig"
+    ) as tmp:
+        df.to_csv(tmp.name, index=False, encoding="utf-8-sig")
+        return Path(tmp.name)
 
 
 class TestBuildChunks:
