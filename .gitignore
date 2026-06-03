@@ -1,2 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# 模型缓存（太大，不提交）
+models/bge_cache/
+models/reranker_cache/
+
+# API 密钥（绝对不能提交！）
 deepseek.env
+.env
+*.env
+
+# 日志数据
+logs/*.csv
+logs/*.json
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
 .claude/
