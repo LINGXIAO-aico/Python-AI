@@ -17,8 +17,15 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import Image, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-
+from reportlab.platypus import (
+    Image,
+    PageBreak,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_DIR = ROOT / "reports"
@@ -119,7 +126,7 @@ def build_selection_docx(path: Path) -> None:
         ("小组成员", TEAM_MEMBERS, "组队人数", "4人"),
         ("团队分工", TEAM_ASSIGNMENT, "代码仓库", "本地已建，可上传 GitHub/Gitee"),
     ]
-    for row, row_values in zip(meta.rows, values):
+    for row, row_values in zip(meta.rows, values, strict=True):
         for idx, text in enumerate(row_values):
             row.cells[idx].text = text
     style_table(meta, header=False)
@@ -168,7 +175,7 @@ def build_selection_docx(path: Path) -> None:
         ("第11-14周", "扩充真实知识库到100条以上，引入 Embedding/FAISS 或大模型 API，完善可视化", "代码仓库更新"),
         ("第15-16周", "整理技术报告、PPT 与演示 Demo，完成答辩", "最终材料"),
     ]
-    for row, values in zip(plan.rows, plan_rows):
+    for row, values in zip(plan.rows, plan_rows, strict=True):
         for idx, text in enumerate(values):
             row.cells[idx].text = text
     style_table(plan, header=False)
@@ -186,7 +193,7 @@ def build_midterm_docx(path: Path) -> None:
         ("小组成员", TEAM_MEMBERS, "当前阶段", "已跑通基线模型"),
         ("代码目录", "当前项目目录", "Demo", "Streamlit + CLI"),
     ]
-    for row, row_values in zip(meta.rows, values):
+    for row, row_values in zip(meta.rows, values, strict=True):
         for idx, text in enumerate(row_values):
             row.cells[idx].text = text
     style_table(meta, header=False)
@@ -212,7 +219,7 @@ def build_midterm_docx(path: Path) -> None:
         ("文本切分", "标题与正文拼接，按约260字符切分；后续真实文档按约500字/50字重叠切分", "chunks.csv"),
         ("评测集", f"按校园常见问题标注 gold_doc_id 和关键词，当前 {QUESTION_COUNT} 题，后续扩展至80题以上", "eval_questions.jsonl"),
     ]
-    for row, row_values in zip(data_table.rows, rows):
+    for row, row_values in zip(data_table.rows, rows, strict=True):
         for idx, text in enumerate(row_values):
             row.cells[idx].text = text
     style_table(data_table)
@@ -236,7 +243,7 @@ def build_midterm_docx(path: Path) -> None:
         ("MRR", f"{EVAL_SUMMARY['retrieval_strategies']['tfidf_vector']['mrr']:.2f}", f"{EVAL_SUMMARY['retrieval_strategies']['bm25_keyword']['mrr']:.2f}", f"{EVAL_SUMMARY['retrieval_strategies']['hybrid_50_50']['mrr']:.2f}"),
         ("平均耗时/ms", f"{EVAL_SUMMARY['retrieval_strategies']['tfidf_vector']['avg_latency_ms']:.3f}", f"{EVAL_SUMMARY['retrieval_strategies']['bm25_keyword']['avg_latency_ms']:.3f}", f"{EVAL_SUMMARY['retrieval_strategies']['hybrid_50_50']['avg_latency_ms']:.3f}"),
     ]
-    for row, row_values in zip(result_table.rows, result_rows):
+    for row, row_values in zip(result_table.rows, result_rows, strict=True):
         for idx, text in enumerate(row_values):
             row.cells[idx].text = text
     style_table(result_table)
@@ -256,7 +263,7 @@ def build_midterm_docx(path: Path) -> None:
         ("中文短问题检索容易受分词影响", "校园问题表达短且口语化", "采用字符 n-gram TF-IDF，减少分词误差"),
         ("真实资料占比仍需提高", "中期阶段以结构化FAQ跑通闭环", "后续接入学校真实PDF/Word资料，并把评测问题扩展到80题以上"),
     ]
-    for row, row_values in zip(issues.rows, issue_rows):
+    for row, row_values in zip(issues.rows, issue_rows, strict=True):
         for idx, text in enumerate(row_values):
             row.cells[idx].text = text
     style_table(issues)

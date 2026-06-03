@@ -7,9 +7,9 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from matplotlib import font_manager
 import pandas as pd
 import seaborn as sns
+from matplotlib import font_manager
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -36,7 +36,6 @@ from campus_rag.retriever import (
     HybridRRFRetriever,
     TfidfRetriever,
 )
-from campus_rag.vectorstore import FAISSStore
 
 
 def configure_fonts() -> None:
@@ -161,12 +160,12 @@ def main() -> None:
 
     save_figures(summary, strategy_summary)
 
-    print(f"\n评测完成！")
+    print("\n评测完成！")
     print(f"  Hit@1: {summary['hit_at_1']:.4f}")
     print(f"  Hit@5: {summary['hit_at_5']:.4f}")
     print(f"  MRR:    {summary['mrr']:.4f}")
     print(f"  nDCG@5: {summary['ndcg_at_5']:.4f}")
-    print(f"\n输出文件:")
+    print("\n输出文件:")
     print(f"  {EVAL_DETAIL_PATH}")
     print(f"  {RETRIEVAL_STRATEGY_PATH}")
     print(f"  {EVAL_SUMMARY_PATH}")

@@ -6,7 +6,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from campus_rag.config import CHUNK_PATH, CLEAN_KB_PATH, DATA_PROFILE_PATH, LOG_DIR, PROCESSED_DIR, RAW_KB_PATH
+from campus_rag.config import (
+    CHUNK_PATH,
+    CLEAN_KB_PATH,
+    DATA_PROFILE_PATH,
+    LOG_DIR,
+    PROCESSED_DIR,
+    RAW_KB_PATH,
+)
 from campus_rag.data import clean_knowledge_base, ensure_dirs, write_json
 from campus_rag.splitter import build_chunks
 

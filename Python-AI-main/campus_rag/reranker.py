@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Sequence
+from typing import Any, cast
 
 import numpy as np
 from sentence_transformers import CrossEncoder
@@ -38,7 +38,7 @@ class BGEReranker:
             return chunks
 
         pairs = [(query, chunk.content) for chunk in chunks]
-        scores = self.model.predict(pairs, show_progress_bar=False)
+        scores = cast(Any, self.model).predict(pairs, show_progress_bar=False)
         scores = np.array(scores, dtype=float)
 
         ranked_indices = np.argsort(scores)[::-1][:top_k]
@@ -66,9 +66,9 @@ class BGEReranker:
         if not chunks:
             return []
         pairs = [(query, chunk.content) for chunk in chunks]
-        scores = self.model.predict(pairs, show_progress_bar=False)
+        scores = cast(Any, self.model).predict(pairs, show_progress_bar=False)
         ranked = sorted(
-            zip(chunks, scores),
+            zip(chunks, scores, strict=True),
             key=lambda x: x[1],
             reverse=True,
         )

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import base64
-import os
 import sys
 from pathlib import Path
 
@@ -28,7 +27,6 @@ from campus_rag.generator import (
 from campus_rag.memory import ConversationMemory
 from campus_rag.reranker import BGEReranker
 from campus_rag.retriever import (
-    BM25Retriever,
     Bm25JiebaRetriever,
     DenseRetriever,
     HybridRRFRetriever,
@@ -489,7 +487,7 @@ if prompt:
             tabs = st.tabs([f"{emoji} {name}" for emoji, name, _ in methods])
             all_answers = {}
 
-            for (key, name, desc), tab in zip(methods, tabs):
+            for (key, _name, desc), tab in zip(methods, tabs, strict=True):
                 with tab:
                     st.caption(f"*{desc}*")
                     ans, srcs, vfy = do_retrieve_and_generate(prompt, key)
@@ -500,11 +498,11 @@ if prompt:
                                 st.caption(f"[{s['doc_id']}] {s['title']}  (score: {s['score']:.3f})")
 
         all_sources = []
-        for _, (ans, srcs, vfy) in all_answers.items():
+        for _, (_ans, srcs, _vfy) in all_answers.items():
             all_sources.extend(srcs)
 
         st.session_state.messages.append({
-            "role": "assistant", "content": f"> 🔬 对比模式 · 4种方法，请查看上方标签页对比差异",
+            "role": "assistant", "content": "> 🔬 对比模式 · 4种方法，请查看上方标签页对比差异",
             "avatar": "🏛️", "sources": all_sources, "verification": None,
         })
         st.session_state.memory.add(prompt, all_answers.get("RRF+RR", ("",))[0] or "")

@@ -4,6 +4,7 @@ import json
 import math
 import time
 from pathlib import Path
+from typing import Protocol
 
 import numpy as np
 import pandas as pd
@@ -16,6 +17,11 @@ from .config import (
 )
 from .data import read_jsonl
 from .generator import extractive_answer, llm_answer, no_retrieval_baseline
+
+
+class RetrieverProtocol(Protocol):
+    def retrieve(self, query: str, top_k: int = 5):
+        ...
 
 
 # ============================================================
@@ -140,7 +146,7 @@ def judge_context_precision(question: str, context: str) -> dict:
 # ============================================================
 
 def evaluate_retrievers(
-    retrievers: dict[str, object],
+    retrievers: dict[str, RetrieverProtocol],
     eval_path: Path,
     detail_path: Path,
     summary_path: Path,

@@ -12,11 +12,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from campus_rag.config import CHUNK_PATH, EMBEDDING_DIM, RETRIEVAL_TOP_K
 from campus_rag.embeddings import BGEEmbedder
-from campus_rag.generator import llm_answer, no_retrieval_baseline
+from campus_rag.generator import llm_answer
 from campus_rag.memory import ConversationMemory
 from campus_rag.reranker import BGEReranker
 from campus_rag.retriever import Bm25JiebaRetriever, DenseRetriever, HybridRRFRetriever
-from campus_rag.vectorstore import FAISSStore
 
 # 全局加载
 print("正在加载模型...")
@@ -58,7 +57,7 @@ with gr.Blocks(
     footer {{ visibility: hidden; }}
     """,
 ) as demo:
-    gr.HTML(f"""
+    gr.HTML("""
     <div class="tongji-header">
         <h2>🏛️ 同小智 — RAG 校园智能问答助手</h2>
         <p style="opacity:0.85;">BGE + FAISS + RRF + DeepSeek · 同济大学 B07 小组</p>
