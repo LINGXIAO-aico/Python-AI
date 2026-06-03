@@ -150,7 +150,7 @@ def main() -> None:
         strategy_detail_path=RETRIEVAL_STRATEGY_PATH,
         selected_strategy="hybrid_rrf",
         top_k=5,
-        use_llm=False,  # 改为 True 以启用 LLM-as-judge（需 API Key）
+        use_llm=True,
         use_llm_answer=True,
         reranker=reranker,
     )
