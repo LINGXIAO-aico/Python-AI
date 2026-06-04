@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, cast
+
 from openai import OpenAI
 
 from .config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_CHAT_MODEL
@@ -11,13 +13,13 @@ def _get_client() -> OpenAI:
 
 def _call_deepseek(prompt: str, system_prompt: str = "", max_tokens: int = 512) -> str:
     client = _get_client()
-    messages = []
+    messages: list[dict[str, Any]] = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
     messages.append({"role": "user", "content": prompt})
     resp = client.chat.completions.create(
         model=DEEPSEEK_CHAT_MODEL,
-        messages=messages,
+        messages=cast(Any, messages),
         temperature=0.3,
         max_tokens=max_tokens,
     )

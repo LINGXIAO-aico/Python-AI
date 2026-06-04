@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import faiss
@@ -62,7 +61,7 @@ class FAISSStore:
         dim: int,
         index_path: Path | None = None,
         meta_path: Path | None = None,
-    ) -> "FAISSStore":
+    ) -> FAISSStore:
         index_path = index_path or FAISS_INDEX_PATH
         meta_path = meta_path or CHUNK_META_PATH
         if not index_path.exists():

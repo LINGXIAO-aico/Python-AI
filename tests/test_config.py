@@ -34,5 +34,5 @@ class TestConfig:
         assert cfg.EMBEDDING_BATCH_SIZE > 0
 
     def test_chunk_config(self):
-        assert cfg.CHUNK_SIZE == 400
+        assert cfg.CHUNK_SIZE == 360
         assert cfg.CHUNK_OVERLAP == 80

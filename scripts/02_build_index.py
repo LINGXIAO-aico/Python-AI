@@ -25,7 +25,7 @@ from campus_rag.config import (
 )
 from campus_rag.data import ensure_dirs
 from campus_rag.embeddings import BGEEmbedder
-from campus_rag.retriever import BM25Retriever, Bm25JiebaRetriever, DenseRetriever, TfidfRetriever
+from campus_rag.retriever import Bm25JiebaRetriever, BM25Retriever, DenseRetriever, TfidfRetriever
 
 
 def main() -> None:
@@ -48,7 +48,7 @@ def main() -> None:
 
     # 3. jieba-BM25
     t0 = time.perf_counter()
-    bm25 = Bm25JiebaRetriever.fit(chunks)
+    Bm25JiebaRetriever.fit(chunks)
     jieba_elapsed = time.perf_counter() - t0
     print(f"jieba-BM25: ({jieba_elapsed:.1f}s)")
 

@@ -11,7 +11,6 @@
 from __future__ import annotations
 
 import json
-import os
 import random
 import sys
 from pathlib import Path
@@ -19,8 +18,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from campus_rag.config import CAMPUS_KB_PATH, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, RAW_EVAL_PATH
 from campus_rag.data import read_jsonl
-from campus_rag.config import CAMPUS_KB_PATH, RAW_EVAL_PATH, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL
 
 OUTPUT_PATH = PROJECT_ROOT / "data" / "raw" / "eval_150.jsonl"
 EVAL_TEMPLATE = """你是一个评测集生成器。根据以下校园知识库片段，生成评测问题。
@@ -134,12 +133,12 @@ def main() -> None:
 
     print(f"\n{'=' * 60}")
     print(f"生成完成！共 {len(unique)} 道评测题")
-    print(f"题型分布:")
+    print("题型分布:")
     for t, c in sorted(type_counts.items()):
         print(f"  {t}: {c}")
     print(f"输出: {OUTPUT_PATH}")
-    print(f"\n提示: 请人工抽检约 20% 的题目，确认 gold_doc_id 和 keywords 正确。")
-    print(f"将 unanswerable 设为少数（<15%），保证大部分题有标准答案。")
+    print("\n提示: 请人工抽检约 20% 的题目，确认 gold_doc_id 和 keywords 正确。")
+    print("将 unanswerable 设为少数（<15%），保证大部分题有标准答案。")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ import pandas as pd
 
 from campus_rag.config import CHUNK_PATH, EMBEDDING_DIM, INDEX_PATH, RETRIEVAL_TOP_K
 from campus_rag.embeddings import BGEEmbedder
-from campus_rag.generator import answer_question, llm_answer, no_retrieval_baseline
+from campus_rag.generator import answer_question, no_retrieval_baseline
 from campus_rag.reranker import BGEReranker
 from campus_rag.retriever import (
     Bm25JiebaRetriever,
@@ -19,7 +19,6 @@ from campus_rag.retriever import (
     HybridRRFRetriever,
     TfidfRetriever,
 )
-from campus_rag.vectorstore import FAISSStore
 
 
 def main() -> None:

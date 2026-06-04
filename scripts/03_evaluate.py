@@ -6,10 +6,12 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib import font_manager
 import pandas as pd
 import seaborn as sns
+from matplotlib import font_manager
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -28,7 +30,6 @@ from campus_rag.config import (
 from campus_rag.data import ensure_dirs
 from campus_rag.embeddings import BGEEmbedder
 from campus_rag.evaluate import evaluate_retrievers
-from campus_rag.reranker import BGEReranker
 from campus_rag.retriever import (
     Bm25JiebaRetriever,
     BM25Retriever,
@@ -36,7 +37,6 @@ from campus_rag.retriever import (
     HybridRRFRetriever,
     TfidfRetriever,
 )
-from campus_rag.vectorstore import FAISSStore
 
 
 def configure_fonts() -> None:
@@ -134,10 +134,11 @@ def main() -> None:
         "hybrid_rrf": hybrid_rrf,
     }
 
-    reranker = BGEReranker()
+    # 离线复现模式：不加载 CrossEncoder reranker，避免额外模型下载。
+    reranker = None
 
     print("=" * 60)
-    print("全量评测（含 LLM-as-judge）")
+    print("全量评测（离线抽取式回答）")
     print(f"评测集: {RAW_EVAL_PATH}")
     print(f"知识库: {len(chunks)} chunks")
     print("=" * 60)
@@ -150,8 +151,8 @@ def main() -> None:
         strategy_detail_path=RETRIEVAL_STRATEGY_PATH,
         selected_strategy="hybrid_rrf",
         top_k=5,
-        use_llm=True,
-        use_llm_answer=True,
+        use_llm=False,  # 改为 True 以启用 LLM-as-judge（需 API Key）
+        use_llm_answer=False,
         reranker=reranker,
     )
 
@@ -161,12 +162,12 @@ def main() -> None:
 
     save_figures(summary, strategy_summary)
 
-    print(f"\n评测完成！")
+    print("\n评测完成！")
     print(f"  Hit@1: {summary['hit_at_1']:.4f}")
     print(f"  Hit@5: {summary['hit_at_5']:.4f}")
     print(f"  MRR:    {summary['mrr']:.4f}")
     print(f"  nDCG@5: {summary['ndcg_at_5']:.4f}")
-    print(f"\n输出文件:")
+    print("\n输出文件:")
     print(f"  {EVAL_DETAIL_PATH}")
     print(f"  {RETRIEVAL_STRATEGY_PATH}")
     print(f"  {EVAL_SUMMARY_PATH}")

@@ -1,0 +1,35 @@
+{
+  "build_timestamp": "2026-06-03 19:27:59",
+  "chunk_count": 538,
+  "retrieval_strategies": [
+    "tfidf_vector",
+    "bm25_old",
+    "bm25_jieba",
+    "bge_dense_faiss",
+    "hybrid_rrf"
+  ],
+  "tfidf": {
+    "vocabulary_size": 56335,
+    "matrix_shape": [
+      538,
+      56335
+    ],
+    "build_seconds": 0.678,
+    "index_path": "E:\\Documents\\CodexProjects\\Python-AI-master\\Python-AI-master\\Python-AI-main\\models\\tfidf_vector_store.joblib"
+  },
+  "bm25_old": {
+    "vocabulary_size": 10890,
+    "build_seconds": 0.035
+  },
+  "bm25_jieba": {
+    "build_seconds": 0.684
+  },
+  "bge_dense_faiss": {
+    "model": "BAAI/bge-large-zh-v1.5",
+    "dim": 1024,
+    "total_vectors": 538,
+    "build_seconds": 415.683,
+    "faiss_path": "E:\\Documents\\CodexProjects\\Python-AI-master\\Python-AI-master\\Python-AI-main\\models\\faiss_index.bin"
+  },
+  "total_build_seconds": 417.08
+}

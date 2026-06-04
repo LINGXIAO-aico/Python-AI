@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # 自动加载项目根目录的 deepseek.env（支持多级目录查找）
@@ -70,7 +71,7 @@ BM25_RECALL_K = int(os.getenv("BM25_RECALL_K", "20"))
 RRF_K = int(os.getenv("RRF_K", "60"))
 
 # === 切分配置 ===
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "400"))
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "360"))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "80"))
 
 # === 多轮对话配置 ===

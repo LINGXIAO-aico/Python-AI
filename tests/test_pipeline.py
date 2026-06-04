@@ -1,6 +1,7 @@
+import pandas as pd
+
 from campus_rag.generator import extractive_answer
 from campus_rag.retriever import BM25Retriever, HybridRetriever, RetrievedChunk, TfidfRetriever
-import pandas as pd
 
 
 def test_extractive_answer_includes_citation():

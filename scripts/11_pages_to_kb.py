@@ -77,7 +77,6 @@ def main() -> None:
             print(f"  [跳过-中文占比低] {title[:40]} ({chinese_ratio:.1%})")
             continue
 
-        from hashlib import md5
         doc_id = f"TJ{i + 1:04d}"
         category = normalize_category(section)
 
@@ -108,7 +107,7 @@ def main() -> None:
         cats[c] = cats.get(c, 0) + 1
 
     print(f"\n清洗完成！有效记录: {len(records)}")
-    print(f"类目分布:")
+    print("类目分布:")
     for cat, count in sorted(cats.items()):
         print(f"  {cat}: {count}")
     print(f"输出文件: {OUTPUT_PATH}")

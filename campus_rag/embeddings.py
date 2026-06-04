@@ -4,10 +4,9 @@ import os
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 from sentence_transformers import SentenceTransformer
 
-from .config import BGE_CACHE_DIR, EMBEDDING_MODEL_NAME, EMBEDDING_BATCH_SIZE, EMBEDDING_DIM
+from .config import BGE_CACHE_DIR, EMBEDDING_BATCH_SIZE, EMBEDDING_DIM, EMBEDDING_MODEL_NAME
 
 
 class BGEEmbedder:

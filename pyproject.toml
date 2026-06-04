@@ -75,6 +75,7 @@ exclude = ["scripts/", "tests/", "build/", ".venv/"]
 # ============================================================
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -93,8 +94,12 @@ markers = [
 [tool.coverage.run]
 source = ["campus_rag"]
 omit = ["tests/*", "scripts/*"]
+branch = true
 
 [tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80
 exclude_also = [
     "def __repr__",
     "if TYPE_CHECKING:",

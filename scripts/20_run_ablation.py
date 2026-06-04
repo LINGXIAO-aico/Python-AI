@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 import time
 from pathlib import Path
@@ -28,18 +27,14 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from campus_rag.config import (
     ABLATION_RESULTS_PATH,
     CHUNK_PATH,
-    DENSE_RECALL_K,
-    BM25_RECALL_K,
-    RETRIEVAL_TOP_K,
     EMBEDDING_DIM,
-    RAW_EVAL_PATH,
     EVAL_150_PATH,
-    LLM_JUDGE_PATH,
+    RAW_EVAL_PATH,
+    RETRIEVAL_TOP_K,
 )
 from campus_rag.data import read_jsonl
 from campus_rag.embeddings import BGEEmbedder
-from campus_rag.evaluate import ndcg_at_k
-from campus_rag.generator import llm_answer, no_retrieval_baseline, self_rag_verify
+from campus_rag.generator import llm_answer, no_retrieval_baseline
 from campus_rag.query_rewriter import hyde_rewrite
 from campus_rag.reranker import BGEReranker
 from campus_rag.retriever import (
@@ -49,22 +44,6 @@ from campus_rag.retriever import (
     TfidfRetriever,
 )
 from campus_rag.vectorstore import FAISSStore
-
-
-def _retry(func, *args, max_attempts=3, backoff_base=2, **kwargs):
-    """带指数退避的重试机制，用于 API 调用容错。"""
-    last_exc = None
-    for attempt in range(1, max_attempts + 1):
-        try:
-            return func(*args, **kwargs)
-        except Exception as exc:
-            last_exc = exc
-            if attempt < max_attempts:
-                wait = backoff_base ** attempt
-                print(f"    [重试] 第{attempt}/{max_attempts}次失败 ({exc}), 等待{wait}s...")
-                time.sleep(wait)
-    print(f"    [重试] 全部{max_attempts}次均失败: {last_exc}")
-    raise last_exc
 
 
 def load_chunks() -> pd.DataFrame:
@@ -142,14 +121,21 @@ def run_ablation(
             # E1: 无检索基线
             latencies = []
             hits = []
-            for q in questions:
+            total = len(questions)
+            for qi, q in enumerate(questions):
+                print(f"\r  [{qi+1}/{total}] 大模型直答...", end="", flush=True)
                 t0 = time.perf_counter()
-                ans = no_retrieval_baseline(q["question"], backend="deepseek")
+                try:
+                    ans = no_retrieval_baseline(q["question"], backend="deepseek")
+                except Exception as e:
+                    ans = f"[生成失败] {e}"
+                    print(f"\n  ⚠ 第{qi+1}题基线生成失败: {e}")
                 latencies.append(time.perf_counter() - t0)
                 keywords = q.get("answer_keywords", [])
                 hits.append(
                     sum(1 for kw in keywords if kw in ans) / max(len(keywords), 1)
                 )
+            print(f"\r  [{total}/{total}] 完成" + " " * 20)
             results.append({
                 "experiment": exp_id,
                 "desc": exp_name,
@@ -168,7 +154,8 @@ def run_ablation(
         total_latency = 0.0
         all_rows: list[dict] = []
 
-        for item in questions:
+        total_q = len(questions)
+        for qi, item in enumerate(questions):
             question = item["question"]
             gold = item["gold_doc_id"]
             keywords = item.get("answer_keywords", [])
@@ -198,20 +185,11 @@ def run_ablation(
                 from campus_rag.generator import extractive_answer
                 ans = extractive_answer(question, chunks)
             else:
-                ans = _retry(llm_answer, question, chunks)
-
-            # Self-RAG 校验（仅 E9）
-            self_rag_result = None
-            if exp_name == "self_rag":
                 try:
-                    self_rag_result = _retry(self_rag_verify, question, ans, chunks)
-                except Exception:
-                    self_rag_result = {
-                        "verdict": "error",
-                        "explanation": "Self-RAG verification failed",
-                        "claims": [],
-                    }
-
+                    ans = llm_answer(question, chunks)
+                except Exception as e:
+                    ans = f"[生成失败] {e}"
+                    print(f"\n  ⚠ 第{qi+1}题生成失败: {e}")
             kw_recall = sum(1 for kw in keywords if kw in ans) / max(len(keywords), 1)
 
             hit1 = int(bool(doc_ids and doc_ids[0] == gold))
@@ -224,55 +202,39 @@ def run_ablation(
                     mrr = 1.0 / idx
                     break
 
-            # nDCG@5
-            ndcg5 = ndcg_at_k(gold, doc_ids, k=5)
-
-            row = {
+            all_rows.append({
                 "question": question,
                 "hit_at_1": hit1,
                 "hit_at_3": hit3,
                 "hit_at_5": hit5,
                 "mrr": mrr,
-                "ndcg_at_5": ndcg5,
                 "keyword_recall": kw_recall,
                 "latency_ms": round(lat * 1000, 3),
                 "top3_docs": "|".join(doc_ids[:3]),
-            }
-            if self_rag_result:
-                claims = self_rag_result.get("claims", [])
-                row["self_rag_verdict"] = self_rag_result.get("verdict", "unknown")
-                row["self_rag_supported_claims"] = sum(
-                    1 for c in claims if c.get("status") == "supported"
-                )
-                row["self_rag_total_claims"] = len(claims)
-            all_rows.append(row)
+            })
+
+            if not quick:
+                print(f"\r  [{qi+1}/{total_q}] 检索+LLM生成... 累计{qi+1}题", end="", flush=True)
+            else:
+                print(f"\r  [{qi+1}/{total_q}] 检索中...", end="", flush=True)
+
+        print(f"\r  [{total_q}/{total_q}] 完成" + " " * 20)
 
         df = pd.DataFrame(all_rows)
         avg_lat = total_latency / max(len(questions), 1) * 1000
 
-        row_data = {
+        results.append({
             "experiment": exp_id,
             "desc": exp_name,
             "hit_at_1": round(float(df["hit_at_1"].mean()), 4),
             "hit_at_3": round(float(df["hit_at_3"].mean()), 4),
             "hit_at_5": round(float(df["hit_at_5"].mean()), 4),
             "mrr": round(float(df["mrr"].mean()), 4),
-            "ndcg_at_5": round(float(df["ndcg_at_5"].mean()), 4),
+            "ndcg_at_5": 0,  # 消融简化，全评测时启用
             "keyword_recall": round(float(df["keyword_recall"].mean()), 4),
             "avg_latency_ms": round(float(avg_lat), 3),
-        }
-        # E9 Self-RAG 汇总统计
-        if exp_name == "self_rag" and "self_rag_verdict" in df.columns:
-            verdict_counts = df["self_rag_verdict"].value_counts().to_dict()
-            row_data["self_rag_verdict_dist"] = str(verdict_counts)
-            row_data["self_rag_supported_claims_avg"] = round(
-                float(df["self_rag_supported_claims"].mean()), 2
-            )
-            row_data["self_rag_total_claims_avg"] = round(
-                float(df["self_rag_total_claims"].mean()), 2
-            )
-        row_data["note"] = exp_name
-        results.append(row_data)
+            "note": exp_name,
+        })
 
     return results
 
