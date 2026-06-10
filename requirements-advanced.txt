@@ -1,0 +1,7 @@
+# Optional advanced stack for the next sprint.
+# The current baseline code runs with requirements.txt.
+langchain>=0.2.0
+langchain-community>=0.2.0
+faiss-cpu>=1.8.0
+rank_bm25>=0.2.2
+sentence-transformers>=3.0.0

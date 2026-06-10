@@ -1,0 +1,16 @@
+﻿.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+.env
+node_modules/
+.DS_Store
+.idea/
+.vscode/
+.pytest_cache/
+.matplotlib/
+*.log
+models/bge_cache/
+models/reranker_cache/
+reports/course_reports_qimo/qa*.png
